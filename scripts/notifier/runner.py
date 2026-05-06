@@ -1,17 +1,17 @@
 import sys
 
-from notifier.config import load_channels, load_global_templates
-from notifier.event_parser import parse_event
-from notifier.renderer import (
+from scripts.notifier.config import load_channels, load_global_templates
+from scripts.notifier.event_parser import parse_event
+from scripts.notifier.renderer import (
     DEFAULT_FAILED_TEMPLATE,
     DEFAULT_SUCCESS_TEMPLATE,
     choose_template,
     render_message,
     truncate_summary,
 )
-from notifier.strategies.custom import CustomStrategy
-from notifier.strategies.dingtalk import DingTalkStrategy
-from notifier.strategies.feishu import FeishuStrategy
+from scripts.notifier.strategies.custom import CustomStrategy
+from scripts.notifier.strategies.dingtalk import DingTalkStrategy
+from scripts.notifier.strategies.feishu import FeishuStrategy
 
 
 def build_strategies() -> dict[str, object]:

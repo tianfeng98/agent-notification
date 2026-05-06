@@ -1,6 +1,6 @@
 import os
 
-from notifier.models import ChannelConfig
+from scripts.notifier.models import ChannelConfig
 
 GLOBAL_SUCCESS_TEMPLATE_ENV = "AGENT_NOTIFICATION_SUCCESS_TEMPLATE"
 GLOBAL_FAILED_TEMPLATE_ENV = "AGENT_NOTIFICATION_FAILED_TEMPLATE"

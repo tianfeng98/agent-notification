@@ -3,8 +3,8 @@ import hashlib
 import hmac
 import time
 
-from notifier.http_client import post_json
-from notifier.strategies.base import BaseStrategy
+from scripts.notifier.http_client import post_json
+from scripts.notifier.strategies.base import BaseStrategy
 
 
 class FeishuStrategy(BaseStrategy):

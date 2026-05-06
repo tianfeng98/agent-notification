@@ -2,6 +2,12 @@
 
 通过 Copilot Agent 的 Stop hook，将会话结束通知发送到钉钉、飞书或自定义 webhook。
 
+本仓库已按 VS Code Agent Plugin（Copilot format）组织，根目录包含：
+
+- `plugin.json`
+- `hooks.json`
+- `hooks/scripts/notify_webhook.py`
+
 ## Supported channels
 
 - dingtalk
@@ -10,7 +16,8 @@
 
 ## Quick start
 
-使用 [hooks/webhook-notify.json](hooks/webhook-notify.json) 作为示例，只保留 hook 命令。
+### 1) 设置操作系统环境变量
+
 所有变量都从操作系统环境变量读取，不要写在 hook 配置文件里。
 
 例如在 macOS/Linux shell 中先导出：
@@ -23,6 +30,25 @@ export AGENT_NOTIFICATION_CUSTOM_WEBHOOK_URL="https://example.com/webhook"
 export AGENT_NOTIFICATION_SUCCESS_TEMPLATE="「Agent执行成功」\n\n---\n{summary}"
 export AGENT_NOTIFICATION_FAILED_TEMPLATE="「Agent执行失败」{reason}"
 ```
+
+### 2) 在 VS Code 安装插件
+
+- 方式 A：命令面板运行 `Chat: Install Plugin From Source`，输入本仓库 Git 地址。
+- 方式 B：在 `settings.json` 配置本地插件路径：
+
+```json
+{
+  "chat.pluginLocations": {
+    "/absolute/path/to/agent-notification": true
+  }
+}
+```
+
+安装后，VS Code 会读取根目录 [plugin.json](plugin.json) 和 [hooks.json](hooks.json)。
+
+### 3) Workspace Hook 示例（可选）
+
+如果你不通过插件机制安装，只想在工作区直接使用，也可以参考 [hooks/webhook-notify.json](hooks/webhook-notify.json)。
 
 ## Environment variables
 

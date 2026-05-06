@@ -6,5 +6,9 @@
     "email": "linktodream@163.com",
     "url": "https://github.com/tianfeng98"
   },
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "homepage": "https://github.com/tianfeng98/agent-notification",
+  "repository": "https://github.com/tianfeng98/agent-notification",
+  "license": "MIT",
+  "keywords": ["notification", "feishu", "dingtalk", "webhook"]
 }

@@ -4,20 +4,20 @@ import hmac
 import time
 import urllib.parse
 
-from scripts.notifier.http_client import post_json
-from scripts.notifier.strategies.base import BaseStrategy
+from notifier.http_client import post_json
+from notifier.strategies.base import BaseStrategy
 
 
 class DingTalkStrategy(BaseStrategy):
     name = "dingtalk"
 
     def _sign(self, secret: str) -> tuple[str, str]:
-        timestamp = str(round(time.time() * 1000))
-        string_to_sign = f"{timestamp}\\n{secret}".encode("utf-8")
+        timestamp = str(int(time.time() * 1000))
+        string_to_sign = f"{timestamp}\n{secret}".encode("utf-8")
         digest = hmac.new(
             secret.encode("utf-8"), string_to_sign, digestmod=hashlib.sha256
         ).digest()
-        sign = urllib.parse.quote_plus(base64.b64encode(digest))
+        sign = urllib.parse.quote_plus(base64.b64encode(digest).decode("utf-8"))
         return timestamp, sign
 
     def send(

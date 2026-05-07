@@ -1,5 +1,5 @@
-from scripts.notifier.http_client import post_json
-from scripts.notifier.strategies.base import BaseStrategy
+from notifier.http_client import post_json
+from notifier.strategies.base import BaseStrategy
 
 
 class CustomStrategy(BaseStrategy):

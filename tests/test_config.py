@@ -1,5 +1,6 @@
 import os
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from notifier import config as config_module
@@ -42,6 +43,26 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(
             "https://os.feishu.example.com",
             values["AGENT_NOTIFICATION_FEISHU_WEBHOOK_URL"],
+        )
+
+    def test_login_shell_env_used_when_process_env_missing(self) -> None:
+        shell_output = "AGENT_NOTIFICATION_CUSTOM_WEBHOOK_URL=https://shell.example.com\nPATH=/usr/bin\n"
+        with patch.dict(os.environ, {}, clear=True):
+            with patch.object(
+                config_module.subprocess,
+                "run",
+                return_value=SimpleNamespace(stdout=shell_output),
+            ):
+                with patch.object(
+                    config_module,
+                    "_read_hook_env_fallback",
+                    return_value={},
+                ):
+                    values = config_module._get_config_values()
+
+        self.assertEqual(
+            "https://shell.example.com",
+            values["AGENT_NOTIFICATION_CUSTOM_WEBHOOK_URL"],
         )
 
 

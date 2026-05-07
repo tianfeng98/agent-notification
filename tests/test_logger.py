@@ -2,7 +2,7 @@ import io
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 
-from notifier.logger import configure_debug, debug_log
+from scripts.notifier.logger import configure_debug, debug_log
 
 
 class LoggerTests(unittest.TestCase):

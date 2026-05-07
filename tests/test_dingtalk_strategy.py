@@ -5,7 +5,7 @@ import unittest
 import urllib.parse
 from unittest.mock import patch
 
-from notifier.strategies.dingtalk import DingTalkStrategy
+from scripts.notifier.strategies.dingtalk import DingTalkStrategy
 
 
 class DingTalkStrategyTests(unittest.TestCase):

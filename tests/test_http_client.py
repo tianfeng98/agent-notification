@@ -4,8 +4,8 @@ import urllib.error
 from contextlib import redirect_stdout
 from unittest.mock import patch
 
-from notifier.http_client import post_json
-from notifier.logger import configure_debug
+from scripts.notifier.http_client import post_json
+from scripts.notifier.logger import configure_debug
 
 
 class _FakeResponse:

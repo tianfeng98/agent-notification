@@ -1,5 +1,7 @@
 import json
 import os
+import pwd
+import subprocess
 from pathlib import Path
 
 from notifier.logger import debug_log
@@ -28,6 +30,48 @@ CHANNEL_ENVS = {
         "failed": "AGENT_NOTIFICATION_CUSTOM_FAILED_TEMPLATE",
     },
 }
+
+
+def _notification_env_keys() -> set[str]:
+    keys = {GLOBAL_SUCCESS_TEMPLATE_ENV, GLOBAL_FAILED_TEMPLATE_ENV, "AGENT_NOTIFICATION_DEBUG"}
+    for envs in CHANNEL_ENVS.values():
+        keys.update(value for value in envs.values() if value)
+    return keys
+
+
+def _login_shell_path() -> str:
+    shell = os.environ.get("SHELL", "").strip()
+    if shell:
+        return shell
+    return pwd.getpwuid(os.getuid()).pw_shell or "/bin/sh"
+
+
+def _read_login_shell_env() -> dict[str, str]:
+    shell = _login_shell_path()
+    try:
+        result = subprocess.run(
+            [shell, "-ilc", "env"],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=5,
+        )
+    except Exception as exc:
+        debug_log(f"config login shell env read failed shell={shell} error={exc}")
+        return {}
+
+    keys = _notification_env_keys()
+    env_map: dict[str, str] = {}
+    for line in result.stdout.splitlines():
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        if key in keys:
+            env_map[key] = value
+    debug_log(
+        f"config login shell env loaded shell={shell} keys={sorted(env_map.keys())}"
+    )
+    return env_map
 
 def _plugin_root() -> Path:
     return Path(__file__).resolve().parents[2]
@@ -94,8 +138,12 @@ def _read_hook_env_fallback() -> dict[str, str]:
 
 
 def _get_config_values() -> dict[str, str]:
-    values = dict(os.environ)
-    debug_log(f"config os env loaded count={len(values)}")
+    shell_env = _read_login_shell_env()
+    values = dict(shell_env)
+    values.update(os.environ)
+    debug_log(
+        f"config os env loaded count={len(os.environ)} shell_env_count={len(shell_env)}"
+    )
     hook_env = _read_hook_env_fallback()
     if hook_env:
         # hooks.json env has higher priority than process environment variables.

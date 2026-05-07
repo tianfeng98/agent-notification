@@ -3,7 +3,7 @@
     "Stop": [
       {
         "type": "command",
-        "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/notify_webhook.py",
+        "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/notify_webhook.py\" || python \"${CLAUDE_PLUGIN_ROOT}/scripts/notify_webhook.py\" || py -3 \"${CLAUDE_PLUGIN_ROOT}/scripts/notify_webhook.py\"",
         "timeout": 10,
         "env": {
           "AGENT_NOTIFICATION_DEBUG": 1

@@ -30,7 +30,13 @@ Claude format（兼容）：
 - `hooks.json`（或 `hooks/hooks.json`）里 Stop hook 的 `env` 字段
 - 操作系统环境变量
 
-优先级：操作系统环境变量 > hooks 配置里的 `env`。
+优先级：hooks 配置里的 `env` > 进程环境变量 > 登录 shell 环境变量回退。
+
+说明：
+
+- 默认先读取 Python 进程内的环境变量（`os.environ`）。
+- 当未检测到任何渠道 webhook 变量时，才会触发一次 shell 环境回退读取。
+- 回退读取仅用于兼容 VS Code 或 Hook 进程未继承 shell 变量的场景。
 
 例如在 macOS/Linux shell 中先导出：
 
@@ -87,6 +93,12 @@ export AGENT_NOTIFICATION_FAILED_TEMPLATE="「Agent执行失败」{reason}"
 
 如果你不通过插件机制安装，只想在工作区直接使用，也可以参考 [hooks/webhook-notify.json](hooks/webhook-notify.json)。
 
+## Cross-platform behavior
+
+- macOS/Linux：回退读取会调用允许列表内的 shell（zsh/bash/sh/dash/ksh）并读取环境变量。
+- Windows：回退读取使用 `COMSPEC`（默认 `cmd.exe`）执行 `set`。
+- Hook command 默认使用 `python scripts/notify_webhook.py` 风格，避免绑定单一 shell 路径。
+
 ## 安装后自检
 
 1. 确认插件入口文件存在
@@ -130,8 +142,9 @@ python3 -m py_compile scripts/notify_webhook.py scripts/notifier/runner.py scrip
 官方 hooks 支持 `env` 字段，且 hook 进程会使用 VS Code 进程环境。常见问题是 VS Code 从图标启动时拿不到 shell 里临时 `export` 的变量。
 处理建议：
 
-- 优先把变量写在 [hooks.json](hooks.json) 或 [hooks/hooks.json](hooks/hooks.json) 的 `env` 中。
+- 优先把变量写在 [hooks.json](hooks.json) 或 [hooks/hooks.json](hooks/hooks.json) 的 `env` 中（优先级最高）。
 - 如果必须用系统环境变量，确保变量在启动 VS Code 的同一进程环境中可见（例如从已 export 的终端启动 VS Code）。
+- 若进程环境中没有渠道变量，程序会自动尝试读取登录 shell 环境变量；若你的 shell 初始化文件较复杂，可优先改为 hooks 的 `env` 显式配置。
 
 1. 插件安装后看不到效果
 

@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import traceback
@@ -25,6 +26,17 @@ def build_strategies() -> dict[str, object]:
     }
 
 
+def _resolve_status(reason: str) -> str:
+    force_status = str(os.environ.get("AGENT_NOTIFICATION_FORCE_STATUS", "")).strip().lower()
+    if force_status in {"success", "failed"}:
+        return force_status
+
+    normalized = (reason or "").strip().lower()
+    if normalized in {"", "done", "end_turn", "complete", "success"}:
+        return "success"
+    return "failed"
+
+
 def main() -> None:
     configure_debug()
     start = time.perf_counter()
@@ -43,7 +55,7 @@ def main() -> None:
         raise SystemExit(0)
 
     summary = truncate_summary(summary)
-    status = "success" if not reason or reason == "done" else "failed"
+    status = _resolve_status(reason)
     debug_log(f"status resolved status={status}")
 
     channels = load_channels()

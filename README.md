@@ -45,8 +45,8 @@ export AGENT_NOTIFICATION_DINGTALK_WEBHOOK_URL="https://oapi.dingtalk.com/robot/
 export AGENT_NOTIFICATION_DINGTALK_SECRET="SECxxxxxxxx"
 export AGENT_NOTIFICATION_FEISHU_WEBHOOK_URL="https://open.feishu.cn/open-apis/bot/v2/hook/your_token"
 export AGENT_NOTIFICATION_CUSTOM_WEBHOOK_URL="https://example.com/webhook"
-export AGENT_NOTIFICATION_SUCCESS_TEMPLATE="「Agent执行成功」\n\n---\n{summary}"
-export AGENT_NOTIFICATION_FAILED_TEMPLATE="「Agent执行失败」{reason}"
+export AGENT_NOTIFICATION_SUCCESS_TEMPLATE="{label} 「Agent执行成功」\n\n---\n{summary}"
+export AGENT_NOTIFICATION_FAILED_TEMPLATE="{label} 「Agent执行失败」{reason}"
 ```
 
 ### 2) 在 VS Code 安装插件
@@ -194,9 +194,27 @@ python3 -m py_compile scripts/notify_webhook.py scripts/notifier/runner.py scrip
 
 ## Template variables
 
+- `{label}`
 - `{summary}`
 - `{reason}`
 - `{status}`
+
+`{label}` 默认值：
+
+- 成功：`🟢 SUCCESS`
+- 失败：`🔴 FAILED`
+
+你可以在模板里自由调整 `{label}` 的位置，例如：
+
+`{label} {summary}` 或 `{summary}\n状态: {label}`。
+
+## ErrorOccurred 失败模板强制说明
+
+`ErrorOccurred` hook 建议通过 `env` 显式指定：
+
+`AGENT_NOTIFICATION_FORCE_STATUS=failed`
+
+这样在异常路径下会直接套用失败模板，避免误判为成功模板。
 
 ## Migration
 

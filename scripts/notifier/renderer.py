@@ -2,8 +2,10 @@ from collections import UserDict
 from typing import Optional
 
 MAX_SUMMARY_LEN = 4000
-DEFAULT_SUCCESS_TEMPLATE = "「Agent执行成功」\n\n---\n{summary}"
-DEFAULT_FAILED_TEMPLATE = "「Agent执行失败」{reason}"
+SUCCESS_LABEL = "🟢 SUCCESS"
+FAILED_LABEL = "🔴 FAILED"
+DEFAULT_SUCCESS_TEMPLATE = "{label} 「Agent执行成功」\n\n---\n{summary}"
+DEFAULT_FAILED_TEMPLATE = "{label} 「Agent执行失败」{reason}"
 
 
 class SafeFormatDict(UserDict):
@@ -27,7 +29,16 @@ def truncate_summary(summary: str) -> str:
     return summary[:MAX_SUMMARY_LEN] + "..."
 
 
+def label_for_status(status: str) -> str:
+    return SUCCESS_LABEL if status == "success" else FAILED_LABEL
+
+
 def render_message(template: str, *, summary: str, reason: str, status: str) -> str:
     return template.format_map(
-        SafeFormatDict(summary=summary, reason=reason, status=status)
+        SafeFormatDict(
+            summary=summary,
+            reason=reason,
+            status=status,
+            label=label_for_status(status),
+        )
     )

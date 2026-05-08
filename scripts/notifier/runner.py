@@ -33,8 +33,14 @@ def main() -> None:
     raw = sys.stdin.read()
     debug_log(f"stdin loaded bytes={len(raw.encode('utf-8')) if raw else 0}")
 
-    reason, summary = parse_event(raw)
-    debug_log(f"event parsed reason={reason!r} summary_len={len(summary)}")
+    reason, summary, notify = parse_event(raw)
+    debug_log(
+        f"event parsed reason={reason!r} summary_len={len(summary)} notify={notify}"
+    )
+
+    if not notify:
+        debug_log("event skipped by parser filter")
+        raise SystemExit(0)
 
     summary = truncate_summary(summary)
     status = "success" if not reason or reason == "done" else "failed"

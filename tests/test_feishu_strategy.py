@@ -4,7 +4,7 @@ import hmac
 import unittest
 from unittest.mock import patch
 
-from scripts.notifier.strategies.feishu import FeishuStrategy
+from notifier.strategies.feishu import FeishuStrategy
 
 
 class FeishuStrategyTests(unittest.TestCase):

@@ -5,6 +5,20 @@ from notifier.event_parser import parse_event
 
 
 class EventParserTests(unittest.TestCase):
+    def test_stop_event_notifies(self) -> None:
+        reason, summary, notify = parse_event(
+            json.dumps(
+                {
+                    "hook_event_name": "Stop",
+                    "stop_reason": "end_turn",
+                    "transcript_path": "",
+                }
+            )
+        )
+        self.assertEqual("end_turn", reason)
+        self.assertEqual("", summary)
+        self.assertTrue(notify)
+
     def test_subagent_stop_is_ignored(self) -> None:
         reason, summary, notify = parse_event(
             json.dumps(

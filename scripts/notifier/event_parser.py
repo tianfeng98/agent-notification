@@ -97,4 +97,9 @@ def parse_event(raw: str) -> tuple[str, str, bool]:
         f"event fields extracted hook_event_name={hook_event_name!r} reason={reason!r} transcript_path={transcript_path!r}"
     )
     summary = read_last_assistant_message(transcript_path) if transcript_path else ""
+    
+    # <final_answer>内容不发送通知
+    if summary.startswith("<final_answer>") or summary.endswith("</final_answer>"):
+        debug_log("event ignored because summary starts with <final_answer>")
+        return reason, summary, False
     return reason, summary, True
